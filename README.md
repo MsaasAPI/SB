@@ -1,2 +1,2 @@
 # SB
-Everything associated with Azure Service Bus.
+Information regarding Azure Service Bus associated with Automated Case Exchange.
