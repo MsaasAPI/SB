@@ -16,12 +16,12 @@
         },
         {
             "type": "java",
-            "name": "Debug (Launch)-App<sblistenerjavademo01>",
+            "name": "Debug (Launch)-Program<sblistenerjavademo01>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal",
             "stopOnEntry": false,
-            "mainClass": "com.contoso.sblistenerjavademo01.App",
+            "mainClass": "com.contoso.sblistenerjavademo01.Program",
             "args": "",
             "projectName": "sblistenerjavademo01"
         },
