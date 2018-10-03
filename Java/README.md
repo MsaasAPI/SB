@@ -1,7 +1,7 @@
 # MSaaS API Sample App for Java
 
 | [Get Started](https://github.com/MsaasAPI/API/wiki/Get-Started-with-VS-Code-for-Java) | Sample App | [References](https://github.com/MsaasAPI/SB/wiki/References) | [License](https://github.com/MsaasAPI/SB/blob/master/LICENSE)
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- |
 
 Java is one of the most popular general-purpose computer-programming languages. We attempt to provide user-friendly step-by-step reference for the readers to get started smoothly and hence shorten the on-boarding process. The intended audience is the web developers.
 
