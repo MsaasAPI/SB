@@ -1,11 +1,13 @@
 package com.contoso.sblistenerjavademo01;
 
+import com.microsoft.azure.servicebus.ReceiveMode;
 import org.apache.commons.lang3.time.StopWatch;
 
-public class Program 
+public class Program
 {
     static StopWatch _stopwatch = new StopWatch();
-    
+    static ReceiveMode RECEIVE_MODE = ReceiveMode.PEEKLOCK;
+
     public static void main( String[] args )
     {
         RunStopwatch();
