@@ -16,6 +16,17 @@
         },
         {
             "type": "java",
+            "name": "Debug (Launch)-Program<sblistenerjavademo01>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "stopOnEntry": false,
+            "mainClass": "com.contoso.sblistenerjavademo01.Program",
+            "args": "",
+            "projectName": "sblistenerjavademo01"
+        },
+        {
+            "type": "java",
             "name": "Debug (Attach)",
             "request": "attach",
             "hostName": "localhost",
