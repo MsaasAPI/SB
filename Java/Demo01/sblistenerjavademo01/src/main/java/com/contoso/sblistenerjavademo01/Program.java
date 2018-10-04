@@ -50,7 +50,7 @@ public class Program
 
     /***** USER CONFIGURABLE FIELDS *****/
     static final String PATH = "Logs"; // Dynamically create a Logs folder for storing the logs
-    static ReceiveMode RECEIVE_MODE = ReceiveMode.PEEKLOCK;
+    static ReceiveMode RECEIVE_MODE = ReceiveMode.RECEIVEANDDELETE;
 
     public static void main( String[] args )
     {
@@ -184,21 +184,21 @@ public class Program
      * Service Bus message version.
      */
     static void ParseEntityAction() {
-        // Parse v1 entity actions
-       _entityAction = _receivedMessage.getProperties().get("EntityAction");
+        try {
+            // Parse v1 entity actions
+            _entityAction = _receivedMessage.getProperties().get("EntityAction");
 
-        // Parse v0 entity actions
-        if (_entityAction.length() == 0) {
-            try {
-                JSONObject parsedJson = new JSONObject(_messageBody);
-                _entityAction = parsedJson.getString("EntityAction");
-            } catch (Exception ex) {
-                // If JSON parsing failed, brute force approach is as below
-                int bruteForceStart = _messageBody.indexOf("EntityAction") + 16;
-                int bruteForceEnd = _messageBody.indexOf('"', bruteForceStart);
-                _entityAction = _messageBody.substring(bruteForceStart, bruteForceEnd - bruteForceStart);
-                System.out.println("Entity Action: ------ " + _entityAction + " ------ " + ex);
+            // Parse v0 entity actions
+            if (_entityAction == null || _entityAction.length() == 0) {
+                    JSONObject parsedJson = new JSONObject(_messageBody);
+                    _entityAction = parsedJson.getString("EntityAction");
             }
+        } catch (Exception ex) {
+            // If JSON parsing failed, brute force approach is as below
+            int bruteForceStart = _messageBody.indexOf("EntityAction") + 16;
+            int bruteForceEnd = _messageBody.indexOf('"', bruteForceStart);
+            _entityAction = _messageBody.substring(bruteForceStart, bruteForceEnd - bruteForceStart);
+            System.out.println("Entity Action: ------ " + _entityAction + " ------ " + ex);
         }
     }
 
@@ -262,7 +262,7 @@ public class Program
             _stopwatch.start();
 
             while (true) {
-                Thread.sleep(10);
+                Thread.sleep(1);
                 System.out.print('\r' + _stopwatch.toString().substring(3, 11) + " ");
             }
         } catch (Exception e) {
