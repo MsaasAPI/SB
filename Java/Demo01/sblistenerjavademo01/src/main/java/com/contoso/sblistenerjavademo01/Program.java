@@ -1,7 +1,9 @@
 package com.contoso.sblistenerjavademo01;
 
+import java.io.File;
+import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 import com.microsoft.azure.servicebus.*;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
@@ -20,12 +22,15 @@ public class Program
     static ISubscriptionClient _subscriptionClient;
     static Date _timeStamp;
     static StopWatch _stopwatch = new StopWatch();
+    static IMessage _receivedMessage;
     static String _caseNumber = "";
     static String _eventType = "";
     static String _entityAction = "";
+    static String _messageBody = "";
     static Integer _cnt = 1;
 
     /***** USER CONFIGURABLE FIELDS *****/
+    static final String PATH = "Logs"; // Dynamically create a Logs folder for storing the logs
     static ReceiveMode RECEIVE_MODE = ReceiveMode.PEEKLOCK;
 
     public static void main( String[] args )
@@ -67,6 +72,41 @@ public class Program
             _subscriptionClient = new SubscriptionClient(
                     new ConnectionStringBuilder(CONNECTION_STRING, TOPIC_PATH + "/subscriptions/" + SUBSCRIPTION),
                     RECEIVE_MODE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Log message info to log file on disk.
+     */
+    static void LogMessageToFile() {
+        try{
+            if (_receivedMessage == null)
+                return;
+
+            // Determine whether the directory exists. If not, create one
+            File directory = new File(PATH);
+
+            if (!directory.exists())
+                directory.mkdir();
+
+            String logContent = new SimpleDateFormat("HH:mm:ss").format(_timeStamp) + ", Case Number: " + _caseNumber
+                    + ", Receive Mode: " + RECEIVE_MODE + "\r\n\r\n";
+            String logName = "log_" + new SimpleDateFormat("yyyy_MMdd_HHmm").format(_timeStamp) + "_ServiceBus.txt";
+            // in order to implement "write-to-file oneliner", we need to know upfront
+            // whether the target file is existent to set proper option flag
+            StandardOpenOption standardOpenOption = new File(PATH + "/" + logName).exists() ? StandardOpenOption.APPEND
+                    : StandardOpenOption.CREATE_NEW;
+
+            // Iterate through and log all properties
+            for (Map.Entry<String, String> p : _receivedMessage.getProperties().entrySet())
+                logContent += String.valueOf(p.getKey()) + ": " + String.valueOf(p.getValue()) + "\r\n";
+
+            // Log Body JSON
+            logContent += "Body:\r\n" + _messageBody + "\r\n\r\n\r\n\r\n";
+
+            Files.write(Paths.get(PATH + "/" + logName), logContent.getBytes(), standardOpenOption);
         } catch (Exception e) {
             e.printStackTrace();
         }
