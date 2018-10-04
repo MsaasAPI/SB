@@ -10,6 +10,7 @@ import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.json.*;
 
 public class Program
 {
@@ -74,6 +75,72 @@ public class Program
                     RECEIVE_MODE);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Reset all message content carrying fields to prevent contamination across
+     * different messages.
+     */
+    static void ResetFields() {
+        _receivedMessage = null;
+        _caseNumber = "";
+        _eventType = "";
+        _entityAction = "";
+        _messageBody = "";
+    }
+
+    /**
+     * Extract info from the single received Service Bus message.
+     */
+    static void ParseMessage() {
+        try {
+            if (_receivedMessage == null)
+                return;
+
+            ParseMessageBody();
+            ParseEntityAction();
+            _caseNumber = _receivedMessage.getProperties().get("CaseNumber").toString().trim();
+            _eventType = _receivedMessage.getProperties().get("EventType").toString().trim();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Isolate Message Body JSON
+     */
+    static void ParseMessageBody() {
+        try {
+            String rawBody = new String(_receivedMessage.getBody(), "UTF-8");
+            int startIndex = rawBody.indexOf("{");
+            int endIndex = rawBody.lastIndexOf("}") + 1;
+            _messageBody = rawBody.substring(startIndex, endIndex);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Retrieve Entity Action from either property or body JSON depending on the
+     * Service Bus message version.
+     */
+    static void ParseEntityAction() {
+        // Parse v1 entity actions
+       _entityAction = _receivedMessage.getProperties().get("EntityAction");
+
+        // Parse v0 entity actions
+        if (_entityAction.length() == 0) {
+            try {
+                JSONObject parsedJson = new JSONObject(_messageBody);
+                _entityAction = parsedJson.getString("EntityAction");
+            } catch (Exception ex) {
+                // If JSON parsing failed, brute force approach is as below
+                int bruteForceStart = _messageBody.indexOf("EntityAction") + 16;
+                int bruteForceEnd = _messageBody.indexOf('"', bruteForceStart);
+                _entityAction = _messageBody.substring(bruteForceStart, bruteForceEnd - bruteForceStart);
+                System.out.println("Entity Action: ------ " + _entityAction + " ------ " + ex);
+            }
         }
     }
 
