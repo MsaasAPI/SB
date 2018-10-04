@@ -1,8 +1,12 @@
 package com.contoso.sblistenerjavademo01;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.microsoft.azure.servicebus.*;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 public class Program
@@ -14,7 +18,12 @@ public class Program
 
     /***** OTHER CONSTANTS & STATIC FIELDS *****/
     static ISubscriptionClient _subscriptionClient;
+    static Date _timeStamp;
     static StopWatch _stopwatch = new StopWatch();
+    static String _caseNumber = "";
+    static String _eventType = "";
+    static String _entityAction = "";
+    static Integer _cnt = 1;
 
     /***** USER CONFIGURABLE FIELDS *****/
     static ReceiveMode RECEIVE_MODE = ReceiveMode.PEEKLOCK;
@@ -61,6 +70,21 @@ public class Program
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Print crucial info on the console window.
+     */
+    static void PrintMessageOnScreen() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+
+        System.out
+                .println(
+                    StringUtils.leftPad((_cnt++).toString(), 4, " ") + " - " 
+                    + simpleDateFormat.format(_timeStamp) + " " 
+                    + _caseNumber + " - " 
+                    + StringUtils.leftPad(_eventType, 6, " ") + ": " 
+                    + _entityAction);
     }
 
     /**
