@@ -54,8 +54,21 @@ public class Program
 
     public static void main( String[] args )
     {
-        Initialize();
-        RunStopwatch();
+        RunServiceBusListener();
+    }
+
+    /**
+     * Core implementation of Service Bus listener per
+     * https://github.com/Azure/azure-service-bus/blob/master/samples/Java/azure-servicebus/QueuesGettingStarted/src/main/java/com/microsoft/azure/servicebus/samples/queuesgettingstarted/QueuesGettingStarted.java
+     */
+    static void RunServiceBusListener() {
+        try {
+            Initialize();
+            RegisterEvents();
+            RunStopwatch();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
